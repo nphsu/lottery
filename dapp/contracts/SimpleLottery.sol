@@ -6,9 +6,21 @@ contract SimpleLottery {
   address[] public tickets;
   address public winner;
   uint public ticketingCloses;
+  string name = "SimpleLottery";
 
   constructor (uint duration) public {
     ticketingCloses = now + duration;
+  }
+
+  function getName() public view returns (string memory) {
+    return name;
+  }
+
+  function getRand () public view returns (bytes32) {
+    bytes32 blockhash32 = blockhash(block.number -1);
+    bytes memory blockhash = toBytes(blockhash32);
+    bytes32 rand = keccak256(blockhash);
+    return rand;
   }
 
   function buy () public payable {
