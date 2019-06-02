@@ -49,6 +49,12 @@ export default {
         console.log(id)
       })
       console.log('buy')
+      luckeyLottery.events.Buy().on('data', function (event) {
+        const data = event.returnValues;
+        console.log('Get event');
+        console.log(data);
+      })
+      .on("error", console.error);
     },
     getTxCount: async address => {
       const count = await web3.eth.getTransactionCount(address)
