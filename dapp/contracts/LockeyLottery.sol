@@ -3,13 +3,11 @@ pragma experimental ABIEncoderV2;
 
 contract LuckeyLottery {
 
-  event Buy (
+  event Buy(
     address player,
     uint value,
-    bytes32 random,
-    uint randomInt,
-    string judge,
-    bool win
+    bool win,
+    uint yourNumber
   );
 
   struct Entry {
@@ -22,6 +20,22 @@ contract LuckeyLottery {
   uint private depositedAmount = 0;
   Entry[] private entries;
 
+  // This is the card of the winner;
+  mapping(uint => bool) numbers;
+
+  // If you enter the introducer, it is stocked.
+  address[] private introducers;
+
+  constructor (uint rand) public {
+    for (uint i = 5000; i < 5000; i++) {
+      if (i == rand) {
+        numbers[i] = true;
+      } else {
+        numbers[i] = false;
+      }
+    }
+  }
+
   function setPrice (uint price) public {
     lotteryPrice = price;
   }
@@ -30,11 +44,12 @@ contract LuckeyLottery {
     return lotteryPrice;
   }
 
-  function buy () public payable {
+  function buy (address introducer) public payable {
     // add input due to create random number
     // https://blockchain.gunosy.io/entry/prngs-in-smartcontract 
     require(msg.value % lotteryPrice == 0);
 
+    // TODO: should we choose the number of ticket?
     uint quantity = msg.value / lotteryPrice;
     totalQuantity += quantity;
     depositedAmount += msg.value;
@@ -42,33 +57,17 @@ contract LuckeyLottery {
     Entry memory entry = Entry(msg.sender, quantity);
     entries.push(entry);
 
-    bytes32 rand = getRand();
-    uint randInt = uint(rand);
-    string memory judge = judge(rand);
-    emit Buy(msg.sender, msg.value, rand, randInt, judge, false);
+    // TODO: roulet loginc
+
+    // Send ETH to contract address
+    address(uint160(address(this))).transfer(msg.value);
+
+    // Register introducer
+    introducers.push(introducer);
+
+    emit Buy(msg.sender, msg.value, false, 4);
   }
-
-  function getRand () private view returns (bytes32) {
-    bytes32 blockhash32 = blockhash(block.number - 1);
-    bytes memory blockhashbyte = toBytes(blockhash32);
-    bytes32 rand = keccak256(blockhashbyte);
-    return rand;
-  }
-
-  function judge (bytes32 rand) private pure returns (string memory) {
-    uint randInt = uint(rand) % 100;
-    uint8[3] memory probabilities = [60, 30, 10];
-    string[3] memory rewards = ["A", "B", "C"];
-
-    uint tempSum = 0;
-    for (uint8 i = 0; i < probabilities.length; i++) {
-      tempSum += probabilities[i];
-      if (randInt < tempSum) {
-        return rewards[i];
-      }
-    }
-  }
-
+ 
   function getTotalQuantity () public view returns (uint) {
     return totalQuantity;
   }
@@ -81,7 +80,11 @@ contract LuckeyLottery {
     return depositedAmount;
   }
 
-  function toBytes(bytes32 _data) public pure returns (bytes memory) {
-    return abi.encodePacked(_data);
+  function getNunber(uint num) public view returns (bool) {
+    return numbers[num];
+  }
+
+  function getIntroducer(uint num) public view returns (address) {
+    return introducers[num];
   }
 }
