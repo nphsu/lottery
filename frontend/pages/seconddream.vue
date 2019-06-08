@@ -3,14 +3,12 @@
     <v-flex md12>
       <div class="text-xs-center">
         <p>SECOND DREAM</p>
-        <p>You can buy a ticket per <span>{{ price }}</span> Ether</p>
-        <v-btn @click="buy()">BUY TICKET</v-btn>
-        <v-btn @click="totalQuantity()">TOTAL QUANTITY</v-btn>
-        <v-btn @click="getTotalEntries()">TOTAL ENTRIES</v-btn>
-        <p>{{judgeMessage}}</p>
+        <p>{{challengeMsg}}</p>
+        <v-btn :disabled="!canApply" @click="challenge()">CHALLENGE</v-btn>
         <v-divider/>
-        <p>UNTIL NOW, we have been accepted {{totalEntryNumber}} entries!!</p>
-        <p>AND, we have collected {{totalEntryNumber / 1000}} Ether!!</p>
+        <v-divider/>
+        <p>Currently, we have {{applicantsNumber}} applicants!</p>
+        <p>The term of this challenge is from 1.MAY.2019 to 31.AUG.2019</p>
       </div>
     </v-flex>
   </v-layout>
@@ -18,34 +16,34 @@
 
 <script>
 import Web3 from 'web3'
-import luckeyLotteryJSON from '~/contracts/LuckeyLottery.json'
+import secondLotteryJSON from '~/contracts/SecondDream.json'
 const web3 = new Web3(Web3.givenProvider)
-const luckeyLotteryABI = luckeyLotteryJSON.abi
-const luckeyLotteryAddress = luckeyLotteryJSON.networks[5777].address
-const luckeyLottery = web3.eth.Contract(luckeyLotteryABI, luckeyLotteryAddress)
+const secondLotteryABI = secondLotteryJSON.abi
+const secondLotteryAddress = secondLotteryJSON.networks[5777].address
+const secondLottery = web3.eth.Contract(secondLotteryABI, secondLotteryAddress)
 const playerAddress = window.web3.eth.accounts[0]
 
 export default {
   components: {},
   data () {
     return {
-      price: 0,
-      totalEntryNumber: 0,
-      depositedAmount: 0,
-      judgeMessage: 'You can win'
+      applicantsNumber: 0,
+      challengeMsg: 'You can challenge a second dream',
+      canApply: true
     }
   },
   // When we use `this` before function, we have to describe `async function ()` instead of `async () =>`
   created: async function () {
-    await this.refresh()
+    await this.fetchApplicants()
   },
   methods: {
     getPrice: function () {
       return this.price
     },
-    buy: async function () {
+    challenge: async function () {
+      const _this = this
       console.log(window.web3.eth.accounts)
-      const encodedData = luckeyLottery.methods.buy().encodeABI()
+      const encodedData = secondLottery.methods.challenge().encodeABI()
       const txCount = await this.getTxCount(playerAddress)
       const rowTx = this.makeRowTx(encodedData, txCount)
 
@@ -58,30 +56,14 @@ export default {
       })
 
       // Get Event to verify
-      luckeyLottery.events.Buy().on('data', function (event) {
+      secondLottery.events.Challenge().on('data', function (event) {
         const data = event.returnValues
         console.log(event)
         console.log(data[0])
-        console.log(data[1].toNumber() / 1e18)
-        console.log(data[2])
-        console.log(data[3].toString())
-        console.log(data[4])
-        localStorage.setItem('result', 'You are winner! You can get 1ST PRIZE(100ETH)')
-        if (data[4] === 'C') {
-          this.judgeMessage = 'You are winner! You can get 1ST PRIZE(100ETH)'
-          console.log(this.judgeMessage)
-        }
-        else if (data[4] === 'B') {
-          this.judgeMessage = 'You are winner! You can get 2ST PRIZE(1ETH)'
-          console.log(this.judgeMessage)
-        }
-        else if (data[4] === 'A') {
-          this.judgeMessage = 'You can get 3ST PRIZE(0.0001ETH)'
-          console.log(this.judgeMessage)
-        }
-        else {
-          console.log('---')
-        }
+        _this.applicantsNumber++
+        // TODO: it's possible to apply several times
+        _this.canApply = false
+        _this.challengeMsg = "Sorry, you don't have a right to challenge any more."
       }).on('error', console.error)
       
     },
@@ -93,7 +75,7 @@ export default {
       const value = 0.001 * 1000000000000000000
       return {
         from: playerAddress,
-        to: luckeyLotteryAddress,
+        to: secondLotteryAddress,
         gasPrice: web3.utils.toHex(3 * 1e10),
         gasLimit: web3.utils.toHex(5000000),
         nonce: '0x' + txCount.toString(16),
@@ -102,50 +84,11 @@ export default {
         chainId: 42 // Why 42
       }
     },
-    // signTx: rowTx => {
-    //   const privKey = Buffer.from(ownerPrivKey, 'hex')
-    //   const tx = new Tx(rowTx)
-    //   tx.sign(privKey)
-    //   return tx
-    // },
-    // sendTx: async tx => {
-    //   const serializedTx = tx.serialize()
-    //   await web3.eth
-    //   .sendSignedTransaction('0x' + serializedTx.toString('hex'))
-    //   .on('receipt', console.log)
-    // }
-    refresh: async function () {
-      await this.getTicketPrice()
-      await this.getTotalEntries()
-      await this.getDepositedAmount()
-    },
-    getTicketPrice: async function () {
-      const price = await luckeyLottery.methods.getPrice().call()
-      if (price === undefined || price ==='') {
-        this.price = 0
-      } else {
-        this.price = price.toNumber() / 1e18
-      }
-    },
-    totalQuantity: async function () {
-      const quantity = await luckeyLottery.methods.getTotalQuantity().call()
-      console.log(quantity.toNumber() / 1e18)
-      this.judgeMessage = 'You can get 3ST PRIZE(0.001ETH)'
-      return quantity
-    },
-    getTotalEntries: async function () {
-      const entries = await luckeyLottery.methods.getEntries().call()
-      this.totalEntryNumber = entries.length
-      return entries
-    },
-    getDepositedAmount: async function () {
-      // Why don't I get value
-      // const amount = await luckeyLottery.methods.getDepositedAmount().call()
-      // if (amount === undefined || amount ==='') {
-      //   this.depositedAmount = 0
-      // } else {
-      //   this.depositedAmount = amount.toNumber() / 1e18
-      // }
+    fetchApplicants: async function () {
+      const applicants = await secondLottery.methods.getApplicants().call()
+      console.log(applicants)
+      this.applicantsNumber = applicants.length
+      return applicants
     }
   }
 }
