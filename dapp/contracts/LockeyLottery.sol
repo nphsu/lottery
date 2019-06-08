@@ -1,7 +1,9 @@
 pragma solidity >=0.4.21 <0.6.0;
 pragma experimental ABIEncoderV2;
 
-contract LuckeyLottery {
+import "./Ownable.sol";
+
+contract LuckeyLottery is Ownable {
 
   event Buy(
     address player,
@@ -44,9 +46,15 @@ contract LuckeyLottery {
     return lotteryPrice;
   }
 
-  function buy (address introducer) public payable {
-    // add input due to create random number
-    // https://blockchain.gunosy.io/entry/prngs-in-smartcontract 
+  function buyWithIntroducer (address introducer) public payable {
+    
+    buy();
+
+    // Register introducer
+    introducers.push(introducer);
+  }
+
+  function buy () public payable {
     require(msg.value % lotteryPrice == 0);
 
     // TODO: should we choose the number of ticket?
@@ -58,12 +66,6 @@ contract LuckeyLottery {
     entries.push(entry);
 
     // TODO: roulet loginc
-
-    // Send ETH to contract address
-    address(uint160(address(this))).transfer(msg.value);
-
-    // Register introducer
-    introducers.push(introducer);
 
     emit Buy(msg.sender, msg.value, false, 4);
   }
@@ -87,4 +89,15 @@ contract LuckeyLottery {
   function getIntroducer(uint num) public view returns (address) {
     return introducers[num];
   }
+
+  function getBalance() public view returns (uint) {
+    return address(this).balance;
+  }
 }
+
+// Probably this is my misunderstand.
+// address(uint160(address(this))).transfer(msg.value);
+
+// Send ETH to contract address
+// address payable contractAddress = address(uint160(address(this)));
+// contractAddress.transfer(msg.value);
