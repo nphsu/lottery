@@ -2,15 +2,17 @@
   <v-layout>
     <v-flex md12>
       <div class="text-xs-center">
-        <p>DREAM TICKETS</p>
-        <p>You can buy a ticket per <span>{{ price }}</span> Ether</p>
+        <p class="display-2">DREAM TICKETS</p>
+        <p>You can buy a ticket per <span class="title font-weight-bold font-italic">{{ price }}</span> Ether</p>
+        <v-text-field v-model="introducer" label="Please input your introducer (Not Required)"></v-text-field>
         <v-btn @click="buy()">BUY TICKET</v-btn>
-        <v-btn @click="totalQuantity()">TOTAL QUANTITY</v-btn>
-        <v-btn @click="getTotalEntries()">TOTAL ENTRIES</v-btn>
         <p>{{judgeMessage}}</p>
         <v-divider/>
-        <p>UNTIL NOW, we have been accepted {{totalEntryNumber}} entries!!</p>
-        <p>AND, we have collected {{totalEntryNumber / 1000}} Ether!!</p>
+        <v-divider/>
+        <p>We have been accepted <span class="headline font-weight-bold font-italic">{{totalEntryNumber}}</span> entries until now!!</p>
+        <p>And now, we have collected <span class="headline font-weight-bold font-italic">{{depositedAmount}}</span> Ether!!</p>
+        <p>Let's try your destiny!</p>
+        <v-btn @click="$router.push(`/`)">BACK TO TOP</v-btn>
       </div>
     </v-flex>
   </v-layout>
@@ -32,12 +34,15 @@ export default {
       price: 0,
       totalEntryNumber: 0,
       depositedAmount: 0,
-      judgeMessage: 'You can win'
+      judgeMessage: 'You can win',
+      introducer: ''
     }
   },
   // When we use `this` before function, we have to describe `async function ()` instead of `async () =>`
   created: async function () {
     await this.refresh()
+    // await this.getIntroducer(3)
+    this.depositedAmount = await this.getContractBalance()
   },
   methods: {
     getPrice: function () {
@@ -45,7 +50,16 @@ export default {
     },
     buy: async function () {
       console.log(window.web3.eth.accounts)
-      const encodedData = luckeyLottery.methods.buy(window.web3.eth.accounts).encodeABI()
+      console.log(this.introducer)
+      
+      let encodedData
+      if (this.introducer === '') {
+        console.log('--')
+        encodedData = luckeyLottery.methods.buy().encodeABI()
+      } else {
+        console.log('++')
+        encodedData = luckeyLottery.methods.buyWithIntroducer(this.introducer).encodeABI()
+      }
       const txCount = await this.getTxCount(playerAddress)
       const rowTx = this.makeRowTx(encodedData, txCount)
 
@@ -64,26 +78,9 @@ export default {
         const data = event.returnValues
         console.log(event)
         console.log(data[0])
-        console.log(data[1].toNumber() / 1e18)
+        console.log(data[1])
         console.log(data[2])
-        console.log(data[3].toString())
-        console.log(data[4])
-        localStorage.setItem('result', 'You are winner! You can get 1ST PRIZE(100ETH)')
-        if (data[4] === 'C') {
-          this.judgeMessage = 'You are winner! You can get 1ST PRIZE(100ETH)'
-          console.log(this.judgeMessage)
-        }
-        else if (data[4] === 'B') {
-          this.judgeMessage = 'You are winner! You can get 2ST PRIZE(1ETH)'
-          console.log(this.judgeMessage)
-        }
-        else if (data[4] === 'A') {
-          this.judgeMessage = 'You can get 3ST PRIZE(0.0001ETH)'
-          console.log(this.judgeMessage)
-        }
-        else {
-          console.log('---')
-        }
+        console.log(data[3])
       }).on('error', console.error)
       
     },
@@ -148,7 +145,16 @@ export default {
       // } else {
       //   this.depositedAmount = amount.toNumber() / 1e18
       // }
-    }
+    },
+    // getIntroducer: async function (num) {
+    //   const introducer = await luckeyLottery.methods.getIntroducer(num).call()
+    //   console.log(introducer)
+    // }
+    getContractBalance: async function () {
+      const balance = await luckeyLottery.methods.getBalance().call()
+      console.log(balance.toNumber() / 1e18)
+      return balance.toNumber() / 1e18
+    },
   }
 }
 </script>

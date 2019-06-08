@@ -72,19 +72,30 @@ export default {
       items: [
         {
           icon: 'apps',
-          title: 'Welcome',
+          title: 'TOP PAGE',
           to: '/'
         },
         {
           icon: 'bubble_chart',
-          title: 'Inspire',
-          to: '/inspire'
-        }
+          title: 'DREAM TICKETS',
+          to: '/dreamtickets'
+        },
+        {
+          icon: 'bubble_chart',
+          title: 'SECOND DREAM',
+          to: '/seconddream'
+        },
+        {
+          icon: 'format_list_numbered_rtl',
+          title: 'TERMS OF SERVICE',
+          to: '/tos'
+        },
+        
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'H2O.Inc'
     }
   }
 }
