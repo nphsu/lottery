@@ -45,7 +45,7 @@ export default {
     },
     buy: async function () {
       console.log(window.web3.eth.accounts)
-      const encodedData = luckeyLottery.methods.buy().encodeABI()
+      const encodedData = luckeyLottery.methods.buy(window.web3.eth.accounts).encodeABI()
       const txCount = await this.getTxCount(playerAddress)
       const rowTx = this.makeRowTx(encodedData, txCount)
 
@@ -58,6 +58,8 @@ export default {
       })
 
       // Get Event to verify
+      const eventBuy = await luckeyLottery.events.Buy()
+      console.log(eventBuy)
       luckeyLottery.events.Buy().on('data', function (event) {
         const data = event.returnValues
         console.log(event)

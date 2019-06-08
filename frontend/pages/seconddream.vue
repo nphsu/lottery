@@ -2,13 +2,15 @@
   <v-layout>
     <v-flex md12>
       <div class="text-xs-center">
-        <p>SECOND DREAM</p>
+        <p class="display-2">SECOND DREAM</p>
         <p>{{challengeMsg}}</p>
         <v-btn :disabled="!canApply" @click="challenge()">CHALLENGE</v-btn>
+        <v-alert :value="completeChallenge" type="success" transition="scale-transition" outline>We accepted your offer! Please wait until the end of the term.</v-alert>
         <v-divider/>
         <v-divider/>
-        <p>Currently, we have {{applicantsNumber}} applicants!</p>
+        <p>Currently, we have </p><span class="display-4"> {{applicantsNumber}}</span><p> applicants!</p>
         <p>The term of this challenge is from 1.MAY.2019 to 31.AUG.2019</p>
+        <v-btn @click="$router.push(`/`)">BACK TO TOP</v-btn>
       </div>
     </v-flex>
   </v-layout>
@@ -29,7 +31,8 @@ export default {
     return {
       applicantsNumber: 0,
       challengeMsg: 'You can challenge a second dream',
-      canApply: true
+      canApply: true,
+      completeChallenge: false
     }
   },
   // When we use `this` before function, we have to describe `async function ()` instead of `async () =>`
@@ -60,7 +63,10 @@ export default {
         const data = event.returnValues
         console.log(event)
         console.log(data[0])
+        
+        _this.completeChallenge = true
         _this.applicantsNumber++
+
         // TODO: it's possible to apply several times
         _this.canApply = false
         _this.challengeMsg = "Sorry, you don't have a right to challenge any more."
