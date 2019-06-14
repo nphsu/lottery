@@ -5,8 +5,77 @@
         <p class="display-2">DREAM TICKETS</p>
         <p>You can buy a ticket per <span class="title font-weight-bold font-italic">{{ price }}</span> Ether</p>
         <v-text-field v-model="introducer" label="Please input your introducer (Not Required)"></v-text-field>
+        <p>You can choose your favorite number below boxies.</p>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">0001 - 0500</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px;">
+              <v-radio-group v-model="dialogm1" column>
+                <div v-for="(value, index) in numbers1_500" :key="index">
+                  <v-radio :label="value.num" :value="value.num" :disabled="value.soldout"></v-radio>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn color="blue darken-1" flat @click="dialog = false">CANCEL</v-btn>
+              <v-btn color="blue darken-1" flat @click="dialog = false">OK</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">0501 - 1000</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">1001 - 1500</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">1501 - 2000</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">2001 - 2500</v-btn>
+          </template>
+        </v-dialog>
+        <v-divider/>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">2501 - 3000</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">3001 - 3500</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">3501 - 4000</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">4001 - 4500</v-btn>
+          </template>
+        </v-dialog>
+        <v-dialog v-model="dialog" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">4501 - 5000</v-btn>
+          </template>
+        </v-dialog>
+        <v-divider/>
+        <p>Your select number is  <span class="headline font-weight-bold font-italic">  {{totalEntryNumber}}  </span> Are you sure?</p>
         <v-btn @click="buy()">BUY TICKET</v-btn>
-        <p>{{judgeMessage}}</p>
         <v-divider/>
         <v-divider/>
         <p>We have been accepted <span class="headline font-weight-bold font-italic">{{totalEntryNumber}}</span> entries until now!!</p>
@@ -35,7 +104,8 @@ export default {
       totalEntryNumber: 0,
       depositedAmount: 0,
       judgeMessage: 'You can win',
-      introducer: ''
+      introducer: '',
+      numbers1_500: [{num:1,soldout:false},{num:2,soldout:true},{num:3,soldout:false},{num:4,soldout:false}]
     }
   },
   // When we use `this` before function, we have to describe `async function ()` instead of `async () =>`
@@ -43,6 +113,12 @@ export default {
     await this.refresh()
     // await this.getIntroducer(3)
     this.depositedAmount = await this.getContractBalance()
+    for (let i = 0; i < 50; i++) {
+      const numbers = await this.getNumber(i)
+      console.log(numbers)
+      this.numbers1_500.push(numbers)
+    }
+    console.log(this.numbers1_500)
   },
   methods: {
     getPrice: function () {
@@ -155,6 +231,10 @@ export default {
       console.log(balance.toNumber() / 1e18)
       return balance.toNumber() / 1e18
     },
+    getNumber: async function(num) {
+      const soldout = await luckeyLottery.methods.getNunber(num).call()
+      return {num: num, soldout: soldout}
+    }
   }
 }
 </script>

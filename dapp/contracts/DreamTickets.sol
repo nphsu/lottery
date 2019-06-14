@@ -82,8 +82,9 @@ contract DreamTickets is Ownable {
   // A player bought a ticket but still not end of process
   function buy (uint _num, uint _passcode) public payable {
     require(msg.value == TICKET_PRICE);
-    require(_num >= 0 || _num < TICKET_TOTAL);
+    require(_num >= 0 && _num < TICKET_TOTAL);
     require(term == Term.BUY);
+    require(commitments[round][_num] == 0);
 
     entryCount[round]++;
 
@@ -130,6 +131,10 @@ contract DreamTickets is Ownable {
     winner[round] = entries[round][seedIndex].buyer;
   }
 
+  function nextGame () public /* onlyOwner */ {
+    round++;
+  }
+
   function setPrice (uint price) public {
     TICKET_PRICE = price;
   }
@@ -154,5 +159,9 @@ contract DreamTickets is Ownable {
 
   function getBalance() public view returns (uint) {
     return address(this).balance;
+  }
+
+  function getRound() public view returns (uint) {
+    return round;
   }
 }
