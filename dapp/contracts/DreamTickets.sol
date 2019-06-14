@@ -9,11 +9,6 @@ contract DreamTickets is Ownable {
     address buyer
   );
 
-  struct Entry {
-    address buyer;
-    SoldoutStatus status;
-  }
-
   enum SoldoutStatus {
     NOT_SELLING,
     BUY,
@@ -36,8 +31,8 @@ contract DreamTickets is Ownable {
   // The total number of ticket which is sold in a term
   uint private TICKET_TOTAL = 5000;
 
-  // Entry player's number
-  mapping(uint => uint) private entryCount;
+  // Buy player's number
+  mapping(uint => uint) private buyCount;
 
   // num => CommitmentHash(BuyerAddress * num * passcode)
   mapping(uint => mapping(uint => bytes32)) private commitments;
@@ -54,12 +49,14 @@ contract DreamTickets is Ownable {
   // Public after reveal
   ////////////////////////////////////////
 
+  // Reveal player's number
+  mapping(uint => uint) private revealCount;
+
   // TicketNumber => BuyerAddress
-  mapping(uint => mapping(uint => Entry)) private entries;
+  mapping(uint => mapping(uint => address)) private numToAddr;
 
   // BuyerAddress => TicketNumbers
-  mapping(uint => mapping(address => uint[])) private tickets;
-
+  mapping(uint => mapping(address => uint[])) private addrToNums;
 
   // The current seed which determine the number of winner
   mapping(uint => bytes32) private seed;
@@ -70,38 +67,45 @@ contract DreamTickets is Ownable {
 
   constructor () public {
     round = 0;
+    initEntries();
   }
 
-  // initNumbers is initialize arrays of numbers
-  // The game will be reset
+  /// @notice The game will be reset
   function initEntries() private {
     round++;
+    buyCount[round] = 0;
+    revealCount[round] = 0;
   }
 
-  // buy is used when you pay ETH and apply a lottery
-  // A player bought a ticket but still not end of process
+  /// @notice A player can buy a ticket but the process still not be end
+  /// @param _num The ticket number (0-4999)
+  /// @param _passcode This is necessary to create random (1000-9999)
   function buy (uint _num, uint _passcode) public payable {
     require(msg.value == TICKET_PRICE);
     require(_num >= 0 && _num < TICKET_TOTAL);
     require(term == Term.BUY);
     require(commitments[round][_num] == 0);
+    require(_passcode >= 1000 && _passcode < 10000);
 
-    entryCount[round]++;
+    buyCount[round]++;
 
     bytes32 commitment = createCommitment(msg.sender, _num, _passcode);
     commitments[round][_num] = commitment;
 
     emit Buy(msg.sender);
 
-    if (entryCount[round] == TICKET_TOTAL) {
+    if (buyCount[round] == TICKET_TOTAL) {
       term = Term.REVEAL;
       // TODO: count down in a week
     }
   }
 
+  /// @notice A player can buy a ticket with introducer address
+  /// @param _num The ticket number (0-4999)
+  /// @param _passcode This is necessary to create random (1000-9999)
   function buyWithIntroducer(uint _num, uint _passcode, address _introducer) public payable {
     buy(_num, _passcode);
-    // register introducer
+    require(msg.sender != _introducer);
     introducers[_introducer]++;
     // TODO: Introduce Event
   }
@@ -113,23 +117,48 @@ contract DreamTickets is Ownable {
 
 
   function reveal (uint _num, uint _passcode) public {
-    require(term == Term.REVEAL);
+    // require(term == Term.REVEAL);
     
     bytes32 commitment = createCommitment(msg.sender, _num, _passcode);
     require(commitments[round][_num] == commitment);
 
     seed[round] = keccak256(abi.encodePacked(seed[round], commitment));
-
-    Entry memory entry = Entry(msg.sender, SoldoutStatus.REVEALED);
-    entries[round][_num] = entry;
-    tickets[round][msg.sender].push(_num);
+    revealCount[round]++;
+    numToAddr[round][_num] = msg.sender;
+    addrToNums[round][msg.sender].push(_num);
   }
 
   function drawWinner () public /*onlyOwner*/ {
     require(term == Term.RESULT);
     uint seedIndex = uint(seed[round]) % TICKET_TOTAL;
-    winner[round] = entries[round][seedIndex].buyer;
+    winner[round] = numToAddr[round][seedIndex];
   }
+
+  function getIntroducedCount(address _user) public view returns (uint) {
+    return introducers[_user];
+  }
+
+  function getRound() public view returns (uint) {
+    return round;
+  }
+
+  function getBuyCount() public view returns (uint) {
+    return buyCount[round];
+  }
+
+  function getRevealCount() public view returns (uint) {
+    return revealCount[round];
+  }
+
+  function getAddress(uint _num) public view returns (address) {
+    return numToAddr[round][_num];
+  }
+
+  function getNumbers(address _address) public view returns (uint[] memory) {
+    return addrToNums[round][_address];
+  }
+
+
 
   function nextGame () public /* onlyOwner */ {
     round++;
@@ -143,9 +172,9 @@ contract DreamTickets is Ownable {
     return TICKET_PRICE;
   }
 
-  function getEntryCount () public view returns (uint) {
-    return entryCount[round];
-  }
+  // function getEntryAddress (uint _num) public view returns (address) {
+  //   return entryCount[round][_num];
+  // }
 
 
 
@@ -153,15 +182,11 @@ contract DreamTickets is Ownable {
     return commitments[round][num];
   }
 
-  function getIntroducedCount() public view returns (uint) {
-    return introducers[msg.sender];
-  }
+
 
   function getBalance() public view returns (uint) {
     return address(this).balance;
   }
 
-  function getRound() public view returns (uint) {
-    return round;
-  }
+
 }
