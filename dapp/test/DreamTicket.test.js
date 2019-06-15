@@ -265,5 +265,38 @@ contract('DreamTicket', accounts => {
       const winner = await this.contract.getWinner()
       console.log(winner)
     })
+
+    /////////////////////////////////////////////
+    // SelectableNumber
+    /////////////////////////////////////////////
+    it('success getSelectableNumbers()', async function() {
+      const num = 24
+      const passcode = 4649
+      const value = 1e15
+      const contractAddress = this.contract.address
+      const numbers = await this.contract.getSelectableNumbers(21, 30)
+      numbers.length.should.equals(10)
+      let foundNumber = false
+      for (var number of numbers) {
+        if (new Number(number) == num) {
+          foundNumber = true
+        }
+      }
+      foundNumber.should.equals(true)
+      await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
+      const numbersAfterBuy = await this.contract.getSelectableNumbers(21, 30)
+      let afterFoundNumber = false
+      for (var number of numbersAfterBuy) {
+        if (new Number(number) == num) {
+          afterFoundNumber = true
+        }
+      }
+      afterFoundNumber.should.equals(false)
+    })
+
+    it('failure getSelectableNumbers() because the from is the same as the to', async function() {
+      const numbers = await this.contract.getSelectableNumbers(21, 21)
+      .should.be.rejectedWith(ERROR_MSG)
+    })
   })
 })
