@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "./Ownable.sol";
 
-contract DreamTickets is Ownable {
+contract DreamTicket is Ownable {
 
   event Buy(
     address buyer

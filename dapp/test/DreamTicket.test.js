@@ -7,7 +7,7 @@ const should = require('chai')
   .use(require('chai-bn')(BN)) 
   .should() 
 
-const DreamTickets = artifacts.require('./DreamTickets.sol')
+const DreamTicket = artifacts.require('./DreamTicket.sol')
 const ERROR_MSG = 'VM Exception while processing transaction: revert'
 
 contract('DreamTicket', accounts => {
@@ -15,7 +15,7 @@ contract('DreamTicket', accounts => {
   describe('as an instance', () => {
 
     beforeEach(async function () {
-      this.contract = await DreamTickets.new()
+      this.contract = await DreamTicket.new()
     })
 
     /////////////////////////////////////////////
