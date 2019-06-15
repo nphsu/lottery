@@ -95,7 +95,7 @@ contract DreamTickets is Ownable {
     emit Buy(msg.sender);
 
     if (buyCount[round] == TICKET_TOTAL) {
-      term = Term.REVEAL;
+      nextTerm();
       // TODO: count down in a week
     }
   }
@@ -117,7 +117,7 @@ contract DreamTickets is Ownable {
 
 
   function reveal (uint _num, uint _passcode) public {
-    // require(term == Term.REVEAL);
+    require(term == Term.REVEAL);
     
     bytes32 commitment = createCommitment(msg.sender, _num, _passcode);
     require(commitments[round][_num] == commitment);
@@ -126,6 +126,10 @@ contract DreamTickets is Ownable {
     revealCount[round]++;
     numToAddr[round][_num] = msg.sender;
     addrToNums[round][msg.sender].push(_num);
+
+    if (revealCount[round] == TICKET_TOTAL) {
+      nextTerm();
+    }
   }
 
   function drawWinner () public /*onlyOwner*/ {
@@ -158,10 +162,32 @@ contract DreamTickets is Ownable {
     return addrToNums[round][_address];
   }
 
+  function nextTerm() public /* onlyOwner */ {
+    require(term == Term.BUY || term == Term.REVEAL);
+    if (term == Term.BUY) {
+      term = Term.REVEAL;
+    } else if (term == Term.REVEAL) {
+      term = Term.RESULT;
+    } else {
+      // nothing
+    }
+  }
+
+  function getTerm() public view returns (Term) {
+    return term;
+  }
+
+  function getWinner() public view returns (address) {
+    return winner[round];
+  }
+
+
 
 
   function nextGame () public /* onlyOwner */ {
+    require(term == Term.RESULT);
     round++;
+    term = Term.BUY;
   }
 
   function setPrice (uint price) public {
@@ -172,21 +198,12 @@ contract DreamTickets is Ownable {
     return TICKET_PRICE;
   }
 
-  // function getEntryAddress (uint _num) public view returns (address) {
-  //   return entryCount[round][_num];
-  // }
-
-
-
-  function getNumber(uint num) public view returns (bytes32) {
-    return commitments[round][num];
+  function setTicketTotal (uint num) public /* onlyOwner */ {
+    // For Only Test
+    TICKET_TOTAL = num;
   }
 
-
-
-  function getBalance() public view returns (uint) {
+  function getContractBalance() public view returns (uint) {
     return address(this).balance;
   }
-
-
 }

@@ -190,6 +190,9 @@ contract('DreamTicket', accounts => {
       await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
       const revealCount = new Number(await this.contract.getRevealCount())
       revealCount.should.equals(0)
+      await this.contract.nextTerm()
+      const term = new Number(await this.contract.getTerm())
+      term.should.equals(1)
       await this.contract.reveal(num, passcode, {from: accounts[0]})
       const afterRevealCount = new Number(await this.contract.getRevealCount())
       afterRevealCount.should.equals(1)
@@ -197,6 +200,20 @@ contract('DreamTicket', accounts => {
       gotAddress.should.equals(accounts[0])
       const gotNumbers = await this.contract.getNumbers(accounts[0])
       new Number(gotNumbers[0]).should.equals(num)
+    })
+
+    it('failure reveal() because term is BUY', async function() {
+      const num = 10;
+      const passcode = 4649;
+      const value = 1e15;
+      const contractAddress = this.contract.address;
+      await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
+      const revealCount = new Number(await this.contract.getRevealCount())
+      revealCount.should.equals(0)
+      const term = new Number(await this.contract.getTerm())
+      term.should.equals(0)
+      await this.contract.reveal(num, passcode, {from: accounts[0]})
+      .should.be.rejectedWith(ERROR_MSG)
     })
 
     it('failure reveal() because num is appropriate', async function() {
@@ -210,5 +227,43 @@ contract('DreamTicket', accounts => {
       .should.be.rejectedWith(ERROR_MSG)
     })
 
+    /////////////////////////////////////////////
+    // Draw
+    /////////////////////////////////////////////
+    it('success drawWinner()', async function() {
+      // Ticket number change
+      const TICKET_TOTAL = 5
+      await this.contract.setTicketTotal(TICKET_TOTAL, {from: accounts[0]})
+
+      // BUY
+      const passcode = 4644
+      const value = 1e15
+      const contractAddress = this.contract.address
+      for (var num = 0; num < TICKET_TOTAL; num++) {
+        await this.contract.buy(num, passcode, {from: accounts[num], to: contractAddress, value: value})
+      }
+      const buyCount = new Number(await this.contract.getBuyCount())
+      buyCount.should.equals(TICKET_TOTAL)
+      let term = new Number(await this.contract.getTerm())
+      term.should.equals(1)
+      
+      // REVEAL
+      for (var num = 0; num < TICKET_TOTAL; num++) {
+        await this.contract.reveal(num, passcode, {from: accounts[num]})
+      }
+      const revealCount = new Number(await this.contract.getRevealCount())
+      revealCount.should.equals(TICKET_TOTAL)
+      term = new Number(await this.contract.getTerm())
+      term.should.equals(2)
+      const gotAddress = await this.contract.getAddress(0)
+      gotAddress.should.equals(accounts[0])
+      const gotNumbers = await this.contract.getNumbers(accounts[3])
+      new Number(gotNumbers[0]).should.equals(3)
+      
+      // // RESULT
+      await this.contract.drawWinner()
+      const winner = await this.contract.getWinner()
+      console.log(winner)
+    })
   })
 })
