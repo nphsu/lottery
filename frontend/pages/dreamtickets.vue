@@ -89,11 +89,11 @@
 
 <script>
 import Web3 from 'web3'
-import luckeyLotteryJSON from '~/contracts/LuckeyLottery.json'
+import dreamTicketJSON from '~/contracts/DreamTicket.json'
 const web3 = new Web3(Web3.givenProvider)
-const luckeyLotteryABI = luckeyLotteryJSON.abi
-const luckeyLotteryAddress = luckeyLotteryJSON.networks[5777].address
-const luckeyLottery = web3.eth.Contract(luckeyLotteryABI, luckeyLotteryAddress)
+const dreamTicketABI = dreamTicketJSON.abi
+const dreamTicketAddress = dreamTicketJSON.networks[5777].address
+const dreamTicket = web3.eth.Contract(dreamTicketABI, dreamTicketAddress)
 const playerAddress = window.web3.eth.accounts[0]
 
 export default {
@@ -131,10 +131,10 @@ export default {
       let encodedData
       if (this.introducer === '') {
         console.log('--')
-        encodedData = luckeyLottery.methods.buy().encodeABI()
+        encodedData = dreamTicket.methods.buy().encodeABI()
       } else {
         console.log('++')
-        encodedData = luckeyLottery.methods.buyWithIntroducer(this.introducer).encodeABI()
+        encodedData = dreamTicket.methods.buyWithIntroducer(this.introducer).encodeABI()
       }
       const txCount = await this.getTxCount(playerAddress)
       const rowTx = this.makeRowTx(encodedData, txCount)
@@ -148,9 +148,9 @@ export default {
       })
 
       // Get Event to verify
-      const eventBuy = await luckeyLottery.events.Buy()
+      const eventBuy = await dreamTicket.events.Buy()
       console.log(eventBuy)
-      luckeyLottery.events.Buy().on('data', function (event) {
+      dreamTicket.events.Buy().on('data', function (event) {
         const data = event.returnValues
         console.log(event)
         console.log(data[0])
@@ -168,7 +168,7 @@ export default {
       const value = 0.001 * 1000000000000000000
       return {
         from: playerAddress,
-        to: luckeyLotteryAddress,
+        to: dreamTicketAddress,
         gasPrice: web3.utils.toHex(3 * 1e10),
         gasLimit: web3.utils.toHex(5000000),
         nonce: '0x' + txCount.toString(16),
@@ -195,7 +195,7 @@ export default {
       await this.getDepositedAmount()
     },
     getTicketPrice: async function () {
-      const price = await luckeyLottery.methods.getPrice().call()
+      const price = await dreamTicket.methods.getPrice().call()
       if (price === undefined || price ==='') {
         this.price = 0
       } else {
@@ -203,19 +203,19 @@ export default {
       }
     },
     totalQuantity: async function () {
-      const quantity = await luckeyLottery.methods.getTotalQuantity().call()
+      const quantity = await dreamTicket.methods.getTotalQuantity().call()
       console.log(quantity.toNumber() / 1e18)
       this.judgeMessage = 'You can get 3ST PRIZE(0.001ETH)'
       return quantity
     },
     getTotalEntries: async function () {
-      const entries = await luckeyLottery.methods.getEntries().call()
+      const entries = await dreamTicket.methods.getEntries().call()
       this.totalEntryNumber = entries.length
       return entries
     },
     getDepositedAmount: async function () {
       // Why don't I get value
-      // const amount = await luckeyLottery.methods.getDepositedAmount().call()
+      // const amount = await dreamTicket.methods.getDepositedAmount().call()
       // if (amount === undefined || amount ==='') {
       //   this.depositedAmount = 0
       // } else {
@@ -223,16 +223,16 @@ export default {
       // }
     },
     // getIntroducer: async function (num) {
-    //   const introducer = await luckeyLottery.methods.getIntroducer(num).call()
+    //   const introducer = await dreamTicket.methods.getIntroducer(num).call()
     //   console.log(introducer)
     // }
     getContractBalance: async function () {
-      const balance = await luckeyLottery.methods.getBalance().call()
+      const balance = await dreamTicket.methods.getBalance().call()
       console.log(balance.toNumber() / 1e18)
       return balance.toNumber() / 1e18
     },
     getNumber: async function(num) {
-      const soldout = await luckeyLottery.methods.getNunber(num).call()
+      const soldout = await dreamTicket.methods.getNunber(num).call()
       return {num: num, soldout: soldout}
     }
   }
