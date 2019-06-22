@@ -29,7 +29,8 @@ contract DreamTicket is Ownable {
   uint private TICKET_PRICE = 1e15;
 
   // The total number of ticket which is sold in a term
-  uint private TICKET_TOTAL = 5000;
+  // uint private TICKET_TOTAL = 5000;
+  uint private TICKET_TOTAL = 5; // DEV
 
   // Buy player's number
   mapping(uint => uint) private buyCount;
@@ -122,6 +123,9 @@ contract DreamTicket is Ownable {
     bytes32 commitment = createCommitment(msg.sender, _num, _passcode);
     require(commitments[round][_num] == commitment);
 
+    // double reveal
+    require(numToAddr[round][_num] != msg.sender);
+
     seed[round] = keccak256(abi.encodePacked(seed[round], commitment));
     revealCount[round]++;
     numToAddr[round][_num] = msg.sender;
@@ -129,13 +133,30 @@ contract DreamTicket is Ownable {
 
     if (revealCount[round] == TICKET_TOTAL) {
       nextTerm();
+      drawWinner();
     }
   }
 
   function drawWinner () public /*onlyOwner*/ {
     require(term == Term.RESULT);
     uint seedIndex = uint(seed[round]) % TICKET_TOTAL;
+    while (numToAddr[round][seedIndex] == address(0)) {
+      seedIndex++;
+      if (seedIndex > TICKET_TOTAL) {
+        seedIndex = 0;
+      }
+    }
     winner[round] = numToAddr[round][seedIndex];
+  }
+
+  function getSeedIndex () public {
+    uint seedIndex = uint(seed[round]) % TICKET_TOTAL;
+    if (numToAddr[round][seedIndex] == address(0)) {
+      seedIndex++;
+      if (seedIndex > TICKET_TOTAL) {
+        seedIndex = 0;
+      }
+    }
   }
 
   function getIntroducedCount(address _user) public view returns (uint) {
@@ -168,6 +189,7 @@ contract DreamTicket is Ownable {
       term = Term.REVEAL;
     } else if (term == Term.REVEAL) {
       term = Term.RESULT;
+      drawWinner();
     } else {
       // nothing
     }
@@ -180,22 +202,6 @@ contract DreamTicket is Ownable {
   function getWinner() public view returns (address) {
     return winner[round];
   }
-
-  // /// @param _from more than equals
-  // /// @param _to less than equals
-  // function getSelectableNumbers(uint _from, uint _to) public view returns (uint[] memory) {
-  //   require(_from < _to);
-  //   uint diff = _to - _from + 1;
-  //   uint[] memory numbers = new uint[](diff);
-  //   uint i = 0;
-  //   for (uint target = _from; target <= _to; target++) {
-  //     if (commitments[round][target][0] == 0) {
-  //       numbers[i] = target;
-  //       i++;
-  //     }
-  //   }
-  //   return numbers;
-  // }
 
   /// @param _from more than equals
   /// @param _to less than equals
@@ -213,6 +219,8 @@ contract DreamTicket is Ownable {
     return numbers;
   }
 
+  /// @param _from more than equals
+  /// @param _to less than equals
   function getNonSelectableNumbers(uint _from, uint _to) public view returns (uint[] memory) {
     require(_from < _to);
     uint diff = _to - _from - getEmptyNumber(_from, _to) + 1;

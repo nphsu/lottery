@@ -227,6 +227,18 @@ contract('DreamTicket', accounts => {
       .should.be.rejectedWith(ERROR_MSG)
     })
 
+    it('failure reveal() because reveal twice', async function() {
+      const num = 10;
+      const passcode = 4649;
+      const value = 1e15;
+      const contractAddress = this.contract.address;
+      await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
+      await this.contract.nextTerm()
+      await this.contract.reveal(num, passcode, {from: accounts[0]})
+      await this.contract.reveal(num, passcode, {from: accounts[0]})
+      .should.be.rejectedWith(ERROR_MSG)
+    })
+
     /////////////////////////////////////////////
     // Draw
     /////////////////////////////////////////////
