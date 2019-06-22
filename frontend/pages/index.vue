@@ -9,6 +9,7 @@
     <v-flex md12>
       <div class="text-xs-center">
         <p>CAUTION: MetaMask is necessary to play this system. If you haven't installed yet, you should install it now.</p>
+        <h3 v-if="winner">Round {{round}} Winner {{winner}}</h3>
         <v-divider/>
       </div>
     </v-flex>
@@ -37,7 +38,7 @@
         </v-flex>
         <v-divider/>
         <v-flex md6>
-          <v-card class="card-wapper" @click="$router.push(`/dreamtickets`)">
+          <v-card class="card-wapper" @click="$router.push(`/dreamticket/reveal`)">
             <v-img class="black--text" height="200px" :src="documentImage">
               <v-container fill-height fluid>
                 <v-layout fill-height>
@@ -119,6 +120,13 @@ import RouletteImage from '~/assets/image/roulette.jpeg'
 import WalletImage from '~/assets/image/wallet.jpg'
 import DocumentImage from '~/assets/image/document.jpeg'
 
+import Web3 from 'web3'
+import dreamTicketJSON from '~/contracts/DreamTicket.json'
+const web3 = new Web3(Web3.givenProvider)
+const dreamTicketABI = dreamTicketJSON.abi
+const dreamTicketAddress = dreamTicketJSON.networks[5777].address
+const dreamTicket = web3.eth.Contract(dreamTicketABI, dreamTicketAddress)
+
 export default {
   components: {
   },
@@ -127,7 +135,16 @@ export default {
       cazinoImage: CazinoImage,
       rouletteImage: RouletteImage,
       walletImage: WalletImage,
-      documentImage: DocumentImage
+      documentImage: DocumentImage,
+      winner: null,
+      round: null
+    }
+  },
+  created: async function () {
+    const term = await dreamTicket.methods.getTerm().call()
+    if (term === 2) {
+      this.round = await dreamTicket.methods.getRound().call()
+      this.winner = await dreamTicket.methods.getWinner().call()
     }
   }
 }
