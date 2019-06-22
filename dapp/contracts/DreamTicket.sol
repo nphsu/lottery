@@ -181,13 +181,29 @@ contract DreamTicket is Ownable {
     return winner[round];
   }
 
+  // /// @param _from more than equals
+  // /// @param _to less than equals
+  // function getSelectableNumbers(uint _from, uint _to) public view returns (uint[] memory) {
+  //   require(_from < _to);
+  //   uint diff = _to - _from + 1;
+  //   uint[] memory numbers = new uint[](diff);
+  //   uint i = 0;
+  //   for (uint target = _from; target <= _to; target++) {
+  //     if (commitments[round][target][0] == 0) {
+  //       numbers[i] = target;
+  //       i++;
+  //     }
+  //   }
+  //   return numbers;
+  // }
+
   /// @param _from more than equals
   /// @param _to less than equals
   function getSelectableNumbers(uint _from, uint _to) public view returns (uint[] memory) {
     require(_from < _to);
-    uint diff = _to - _from + 1;
-    uint[] memory numbers = new uint[](diff);
+    uint diff = getEmptyNumber(_from, _to);
     uint i = 0;
+    uint[] memory numbers = new uint[](diff);
     for (uint target = _from; target <= _to; target++) {
       if (commitments[round][target][0] == 0) {
         numbers[i] = target;
@@ -197,8 +213,15 @@ contract DreamTicket is Ownable {
     return numbers;
   }
 
-
-
+  function getEmptyNumber(uint _from, uint _to) private view returns (uint) {
+    uint diff = 0;
+    for (uint target = _from; target <= _to; target++) {
+      if (commitments[round][target][0] == 0) {
+        diff++;
+      }
+    }
+    return diff;
+  }
 
   function nextGame () public /* onlyOwner */ {
     require(term == Term.RESULT);

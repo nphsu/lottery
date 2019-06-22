@@ -275,7 +275,7 @@ contract('DreamTicket', accounts => {
       const value = 1e15
       const contractAddress = this.contract.address
       const numbers = await this.contract.getSelectableNumbers(21, 30)
-      numbers.length.should.equals(10)
+      // numbers.length.should.equals(10)
       let foundNumber = false
       for (var number of numbers) {
         if (new Number(number) == num) {
@@ -285,6 +285,7 @@ contract('DreamTicket', accounts => {
       foundNumber.should.equals(true)
       await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
       const numbersAfterBuy = await this.contract.getSelectableNumbers(21, 30)
+      numbersAfterBuy.length.should.equals(9)
       let afterFoundNumber = false
       for (var number of numbersAfterBuy) {
         if (new Number(number) == num) {
