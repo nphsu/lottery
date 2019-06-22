@@ -213,6 +213,20 @@ contract DreamTicket is Ownable {
     return numbers;
   }
 
+  function getNonSelectableNumbers(uint _from, uint _to) public view returns (uint[] memory) {
+    require(_from < _to);
+    uint diff = _to - _from - getEmptyNumber(_from, _to) + 1;
+    uint i = 0;
+    uint[] memory numbers = new uint[](diff);
+    for (uint target = _from; target <= _to; target++) {
+      if (commitments[round][target][0] != 0) {
+        numbers[i] = target;
+        i++;
+      }
+    }
+    return numbers;
+  }
+
   function getEmptyNumber(uint _from, uint _to) private view returns (uint) {
     uint diff = 0;
     for (uint target = _from; target <= _to; target++) {
