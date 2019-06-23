@@ -10,6 +10,7 @@
       <div class="text-xs-center">
         <p>CAUTION: MetaMask is necessary to play this system. If you haven't installed yet, you should install it now.</p>
         <h3 v-if="winner">Round {{round}} Winner {{winner}}</h3>
+        <p v-if="introducer">Introduced by {{introducer}}</p>
         <v-divider/>
       </div>
     </v-flex>
@@ -65,7 +66,7 @@
     <v-flex md12>
       <v-layout row justify-space-between>
         <v-flex md6>
-          <v-card class="card-wapper" @click="$router.push(`/Mypage`)">
+          <v-card class="card-wapper" @click="$router.push(`/mypage`)">
             <v-img class="white--text" height="200px" :src="walletImage">
               <v-container fill-height fluid>
                 <v-layout fill-height>
@@ -137,7 +138,8 @@ export default {
       walletImage: WalletImage,
       documentImage: DocumentImage,
       winner: null,
-      round: null
+      round: null,
+      introducer: null,
     }
   },
   created: async function () {
@@ -146,6 +148,7 @@ export default {
       this.round = await dreamTicket.methods.getRound().call()
       this.winner = await dreamTicket.methods.getWinner().call()
     }
+    this.introducer = this.$store.state.introducer
   }
 }
 </script>
