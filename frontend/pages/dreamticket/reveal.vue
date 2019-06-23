@@ -21,6 +21,9 @@
           <v-flex md12>
             <v-btn @click="getTerm()">TERM</v-btn>
           </v-flex>
+          <v-flex md12>
+            <v-btn @click="getBalance()">BALANCE</v-btn>
+          </v-flex>
         </v-layout>
         <v-layout>
           <v-flex md12>
@@ -73,6 +76,10 @@ export default {
       console.log(reveal)
       const commit = await dreamTicket.methods.createCommitment(playerAddress, this.selectedNumber, this.passcode).call()
       console.log(commit)
+    },
+    getBalance: async function () {
+      const balance = await dreamTicket.methods.getContractBalance().call()
+      console.log(balance.toNumber())
     },
     getTxCount: async address => {
       const count = await web3.eth.getTransactionCount(address)
