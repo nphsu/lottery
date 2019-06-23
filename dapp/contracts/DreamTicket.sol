@@ -54,7 +54,7 @@ contract DreamTicket is Ownable {
   mapping(uint => uint) private revealCount;
 
   // TicketNumber => BuyerAddress
-  mapping(uint => mapping(uint => address)) private numToAddr;
+  mapping(uint => mapping(uint => address payable)) private numToAddr;
 
   // BuyerAddress => TicketNumbers
   mapping(uint => mapping(address => uint[])) private addrToNums;
@@ -63,7 +63,7 @@ contract DreamTicket is Ownable {
   mapping(uint => bytes32) private seed;
 
   // The winner of a current game
-  mapping(uint => address) private winner;
+  mapping(uint => address payable) private winner;
 
 
   constructor () public {
@@ -137,7 +137,7 @@ contract DreamTicket is Ownable {
     }
   }
 
-  function drawWinner () public /*onlyOwner*/ {
+  function drawWinner () public payable/*onlyOwner*/ {
     require(term == Term.RESULT);
     uint seedIndex = uint(seed[round]) % TICKET_TOTAL;
     while (numToAddr[round][seedIndex] == address(0)) {
@@ -147,6 +147,8 @@ contract DreamTicket is Ownable {
       }
     }
     winner[round] = numToAddr[round][seedIndex];
+    owner().transfer(address(this).balance / 3);
+    winner[round].transfer(address(this).balance);
   }
 
   function getSeedIndex () public {

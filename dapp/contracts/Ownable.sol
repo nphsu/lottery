@@ -10,7 +10,7 @@ pragma solidity >=0.4.21 <0.6.0;
  * the owner.
  */
 contract Ownable {
-    address private _owner;
+    address payable private _owner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -25,7 +25,7 @@ contract Ownable {
     /**
      * @dev Returns the address of the current owner.
      */
-    function owner() public view returns (address) {
+    function owner() public view returns (address payable) {
         return _owner;
     }
 
@@ -60,14 +60,14 @@ contract Ownable {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public onlyOwner {
+    function transferOwnership(address payable newOwner) public onlyOwner {
         _transferOwnership(newOwner);
     }
 
     /**
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      */
-    function _transferOwnership(address newOwner) internal {
+    function _transferOwnership(address payable newOwner) internal {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
