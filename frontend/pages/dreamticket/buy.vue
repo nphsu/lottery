@@ -132,7 +132,7 @@ export default {
     },
     fetchTicketPrice: async function () {
       const ticketPrice = await dreamTicket.methods.getPrice().call()
-      if (ticketPrice === undefined || ticketPrice ==='') {
+      if (ticketPrice == null) {
         this.ticketPrice = 0
       } else {
         this.ticketPrice = ticketPrice.toNumber() / 1e18
