@@ -29,8 +29,8 @@ contract DreamTicket is Ownable {
   uint private TICKET_PRICE = 1e15;
 
   // The total number of ticket which is sold in a term
-  // uint private TICKET_TOTAL = 5000;
-  uint private TICKET_TOTAL = 10; // DEV
+  uint private TICKET_TOTAL = 5000;
+  // uint private TICKET_TOTAL = 10; // DEV
 
   // Buy player's number
   mapping(uint => uint) private buyCount;

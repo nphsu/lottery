@@ -10,14 +10,14 @@
         
         <v-dialog v-model="dialog0" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(0, 4)">0000 - 0499</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(0, 0, 499)" :loading="loading">0000 - 0499</v-btn>
           </template>
           <v-card>
             <v-card-title>Select Ticket Number</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 500px; width: 500px;">
               <v-radio-group column>
-                <div v-for="(value, index) in numbers1_500" :key="index">
+                <div v-for="(value, index) in numbers0" :key="index">
                   <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
                 </div>
               </v-radio-group>
@@ -27,8 +27,19 @@
 
         <v-dialog v-model="dialog1" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>0500 - 0999</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(1, 500, 999)" :loading="loading">0500 - 0999</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers1" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
 
         <v-dialog v-model="dialog2" scrollable max-width="300px">
@@ -133,9 +144,19 @@ export default {
       dialog7: false,
       dialog8: false,
       dialog9: false,
-      buyComplete: false,
+      loading: false,
       // numbers1_500: [{num:1,soldout:false},{num:2,soldout:true},{num:3,soldout:false},{num:4,soldout:false}],
-      numbers1_500: '',
+      numbers0: '',
+      numbers1: '',
+      numbers2: '',
+      numbers3: '',
+      numbers4: '',
+      numbers5: '',
+      numbers6: '',
+      numbers7: '',
+      numbers8: '',
+      numbers9: '',
+      buyComplete: false,
     }
   },
   created: async function () {
@@ -153,10 +174,11 @@ export default {
         this.ticketPrice = ticketPrice.toNumber() / 1e18
       }
     },
-    getSelectableNumbers: async function (from, to) {
+    getSelectableNumbers: async function (index, from, to) {
       // const targets = [...Array(to+1).keys()].slice(from, to+1)
+      this.loading = true
       const numbers = await dreamTicket.methods.getSelectableNumbers(from, to).call()
-      const result = [];
+      const result = []
       for (const number of numbers) {
         const obj = {num: number.toNumber(), soldout: false}
         result.push(obj)
@@ -166,8 +188,43 @@ export default {
         const obj = {num: outnumber.toNumber(), soldout: true}
         result.push(obj)
       }
-      this.numbers1_500 = result  
+      this.setNumbers(index, result)
+      this.loading = false
       return result
+    },
+    setNumbers: function (index, result) {
+      switch (index) {
+        case 0:
+          this.numbers0 = result
+          break
+        case 1:
+          this.numbers1 = result
+          break
+        case 2:
+          this.numbers2 = result
+          break
+        case 3:
+          this.numbers3 = result
+          break
+        case 4:
+          this.numbers4 = result
+          break
+        case 5:
+          this.numbers5 = result
+          break
+        case 6:
+          this.numbers6 = result
+          break
+        case 7:
+          this.numbers7 = result
+          break
+        case 8:
+          this.numbers8 = result
+          break
+        case 9:
+          this.numbers9 = result
+          break
+      }
     },
     selectNumber: function (num) {
       this.selectedNumber = num
