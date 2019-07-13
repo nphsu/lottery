@@ -8,7 +8,7 @@
         <v-text-field v-model="introducer" label="Please input your introducer (Not Required)"></v-text-field>
         <p>You can choose your favorite number below boxies.</p>
         
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog0" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(0, 4)">0000 - 0499</v-btn>
           </template>
@@ -25,43 +25,49 @@
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog1" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>0500 - 0999</v-btn>
           </template>
         </v-dialog>
 
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog2" scrollable max-width="300px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on" disabled>1000 - 1499</v-btn>
+          </template>
+        </v-dialog>
+
+        <v-dialog v-model="dialog3" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>1500 - 1999</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog4" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>2000 - 2499</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog5" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>2500 - 2999</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog6" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>3000 - 3499</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog7" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>3500 - 3999</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog8" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>4000 - 4499</v-btn>
           </template>
         </v-dialog>
-        <v-dialog v-model="dialog" scrollable max-width="300px">
+        <v-dialog v-model="dialog9" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on" disabled>4500 - 4999</v-btn>
           </template>
@@ -117,7 +123,16 @@ export default {
       passcode: '',
       passcodeConfirm: '',
       validPasscode: true,
-      dialog: false,
+      dialog0: false,
+      dialog1: false,
+      dialog2: false,
+      dialog3: false,
+      dialog4: false,
+      dialog5: false,
+      dialog6: false,
+      dialog7: false,
+      dialog8: false,
+      dialog9: false,
       buyComplete: false,
       // numbers1_500: [{num:1,soldout:false},{num:2,soldout:true},{num:3,soldout:false},{num:4,soldout:false}],
       numbers1_500: '',
@@ -156,7 +171,7 @@ export default {
     },
     selectNumber: function (num) {
       this.selectedNumber = num
-      this.dialog = false
+      this.resetDialog()
     },
     buy: async function () {
       const _this = this
@@ -214,6 +229,18 @@ export default {
         data: encodedData,
         chainId: 42 // Why 42
       }
+    },
+    resetDialog: function () {
+      this.dialog0 = false
+      this.dialog1 = false
+      this.dialog2 = false
+      this.dialog3 = false
+      this.dialog4 = false
+      this.dialog5 = false
+      this.dialog6 = false
+      this.dialog7 = false
+      this.dialog8 = false
+      this.dialog9 = false
     },
   }
 }
