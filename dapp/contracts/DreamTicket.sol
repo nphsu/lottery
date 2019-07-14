@@ -39,11 +39,11 @@ contract DreamTicket is Ownable {
   mapping(uint => mapping(uint => bytes32)) private commitments;
 
   // If you enter the introducer, it is incremented
-  mapping(address => uint) private introducers;
+  mapping(address => uint) internal introducers;
 
-  Term private term;
+  Term internal term;
 
-  uint private round;
+  uint internal round;
 
 
   ////////////////////////////////////////
