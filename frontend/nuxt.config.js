@@ -1,6 +1,15 @@
 import VuetifyLoaderPlugin from 'vuetify-loader/lib/plugin'
 import pkg from './package'
 
+const routerBase =
+  process.env.DEPLOY_ENV === 'GH_PAGES'
+    ? {
+      router: {
+        base: '/dreamticket/'
+      }
+    }
+    : {}
+
 export default {
   mode: 'spa',
 
@@ -22,6 +31,9 @@ export default {
           'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
       }
     ]
+  },
+  router: {
+    base: '/dreamticket/'
   },
 
   /*
@@ -54,6 +66,7 @@ export default {
     // See https://github.com/nuxt-community/axios-module#options
   },
 
+  ...routerBase,
   /*
    ** Build configuration
    */
