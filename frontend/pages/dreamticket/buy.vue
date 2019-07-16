@@ -122,7 +122,6 @@ const web3 = new Web3(Web3.givenProvider)
 const dreamTicketABI = dreamTicketJSON.abi
 const dreamTicketAddress = dreamTicketJSON.networks[5777].address
 const dreamTicket = web3.eth.Contract(dreamTicketABI, dreamTicketAddress)
-const playerAddress = window.web3.eth.accounts[0]
 
 export default {
   components: {},
@@ -164,7 +163,14 @@ export default {
   },
   methods: {
     refresh: async function () {
+      this.loadAccount()
       await this.fetchTicketPrice()
+    },
+    loadAccount : () =>{
+      window.ethereum.enable().then((account) =>{
+        const defaultAccount = account[0]
+        web3.eth.defaultAccount = defaultAccount
+      })
     },
     fetchTicketPrice: async function () {
       const ticketPrice = await dreamTicket.methods.getPrice().call()
@@ -244,9 +250,9 @@ export default {
         console.log('call buyWithIntroducer()')
         encodedData = dreamTicket.methods.buyWithIntroducer(this.selectedNumber, this.passcode, this.introducer).encodeABI()
       }
-      const txCount = await this.getTxCount(playerAddress)
+      const txCount = await this.getTxCount(web3.eth.defaultAccount)
       const rowTx = this.makeRowTx(encodedData, txCount)
-
+      
       // The MetaMask Web3 object does not support synchronous methods
       window.web3.eth.sendTransaction(rowTx, (e, id) => {
         if (e) {
@@ -277,7 +283,7 @@ export default {
     makeRowTx: (encodedData, txCount) => {
       const value = 0.001 * 1000000000000000000
       return {
-        from: playerAddress,
+        from: web3.eth.defaultAccount,
         to: dreamTicketAddress,
         gasPrice: web3.utils.toHex(3 * 1e10),
         gasLimit: web3.utils.toHex(5000000),
