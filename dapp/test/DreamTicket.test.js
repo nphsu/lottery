@@ -41,6 +41,8 @@ contract('DreamTicket', accounts => {
       const buyCount = new Number(await this.contract.getBuyCount())
       buyCount.should.equals(0)
       await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
+      const numbersOnBuyTerm = await this.contract.getNumbersOnBuyTerm(accounts[0])
+      new Number(numbersOnBuyTerm[0]).should.equals(num)
       const afterBuyCount = new Number(await this.contract.getBuyCount())
       afterBuyCount.should.equals(1)
     })
@@ -198,7 +200,7 @@ contract('DreamTicket', accounts => {
       afterRevealCount.should.equals(1)
       const gotAddress = await this.contract.getAddress(num)
       gotAddress.should.equals(accounts[0])
-      const gotNumbers = await this.contract.getNumbers(accounts[0])
+      const gotNumbers = await this.contract.getNumbersOnRevealTerm(accounts[0])
       new Number(gotNumbers[0]).should.equals(num)
     })
 
@@ -269,7 +271,7 @@ contract('DreamTicket', accounts => {
       term.should.equals(2)
       const gotAddress = await this.contract.getAddress(0)
       gotAddress.should.equals(accounts[0])
-      const gotNumbers = await this.contract.getNumbers(accounts[3])
+      const gotNumbers = await this.contract.getNumbersOnRevealTerm(accounts[3])
       new Number(gotNumbers[0]).should.equals(3)
       
       // // RESULT

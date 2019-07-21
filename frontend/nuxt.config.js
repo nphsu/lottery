@@ -32,9 +32,9 @@ export default {
       }
     ]
   },
-  router: {
-    base: '/dreamticket/'
-  },
+  // router: {
+  //   base: '/dreamticket/'
+  // },
 
   /*
    ** Customize the progress-bar color

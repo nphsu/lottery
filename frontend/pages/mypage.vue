@@ -4,9 +4,11 @@
       <div class="text-xs-center">
         <p class="display-2">DREAM TICKETS</p>
         <p>Now is available (1.Aug.2019 - 14.Aug.2019)</p>
-        <v-layout>   
+        <v-layout>
           <v-flex md12>
             <v-btn @click="createUrl()">URL</v-btn>
+            <p>You can send this below link to get a right of challenging Second Dream!</p>
+            <p>{{affiliateLink}}</p>
           </v-flex>
         </v-layout>
       </div>
@@ -28,13 +30,14 @@ export default {
   components: {},
   data () {
     return {
+      affiliateLink: null,
     }
   },
+  created: function () {
+    // TODO: change to a real domain and a url
+    this.affiliateLink = `http://localhost:3000/${playerAddress}`
+  },
   methods: {
-    createUrl: function () {
-      const url = `localhost:3000/${playerAddress}`
-      console.log(url)
-    },
   }
 }
 </script>

@@ -38,6 +38,9 @@ contract DreamTicket is Ownable {
   // num => CommitmentHash(BuyerAddress * num * passcode)
   mapping(uint => mapping(uint => bytes32)) private commitments;
 
+  // BuyerAddress => TicketNumbers
+  mapping(uint => mapping(address => uint[])) private addrToNumsOnBuyTerm;
+
   // If you enter the introducer, it is incremented
   mapping(address => uint) internal introducers;
 
@@ -57,7 +60,7 @@ contract DreamTicket is Ownable {
   mapping(uint => mapping(uint => address payable)) private numToAddr;
 
   // BuyerAddress => TicketNumbers
-  mapping(uint => mapping(address => uint[])) private addrToNums;
+  mapping(uint => mapping(address => uint[])) private addrToNumsOnRevealTerm;
 
   // The current seed which determine the number of winner
   mapping(uint => bytes32) private seed;
@@ -92,6 +95,7 @@ contract DreamTicket is Ownable {
 
     bytes32 commitment = createCommitment(msg.sender, _num, _passcode);
     commitments[round][_num] = commitment;
+    addrToNumsOnBuyTerm[round][msg.sender].push(_num);
 
     emit Buy(msg.sender);
 
@@ -129,7 +133,7 @@ contract DreamTicket is Ownable {
     seed[round] = keccak256(abi.encodePacked(seed[round], commitment));
     revealCount[round]++;
     numToAddr[round][_num] = msg.sender;
-    addrToNums[round][msg.sender].push(_num);
+    addrToNumsOnRevealTerm[round][msg.sender].push(_num);
 
     if (revealCount[round] == TICKET_TOTAL) {
       nextTerm();
@@ -181,8 +185,12 @@ contract DreamTicket is Ownable {
     return numToAddr[round][_num];
   }
 
-  function getNumbers(address _address) public view returns (uint[] memory) {
-    return addrToNums[round][_address];
+  function getNumbersOnBuyTerm(address _address) public view returns (uint[] memory) {
+    return addrToNumsOnBuyTerm[round][_address];
+  }
+
+  function getNumbersOnRevealTerm(address _address) public view returns (uint[] memory) {
+    return addrToNumsOnRevealTerm[round][_address];
   }
 
   function nextTerm() public /* onlyOwner */ {
