@@ -4042,12 +4042,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x1884CF5B1DB57A6d2379d5adfa664f8995965eF5",
-      "transactionHash": "0xe896b3e128e079680bedf435fe66a0ba47b72164e355a9a5177a3a340a5ad37d"
+      "address": "0xa2E49Efb18a94e02b18b50c23f0F55AF45b14dd1",
+      "transactionHash": "0xe344cefc6283eb01b878a6c26c2703f92d61de66a36ffe18cc864269db42350e"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-07-21T14:01:35.501Z",
+  "updatedAt": "2019-07-21T14:18:22.963Z",
   "devdoc": {
     "methods": {
       "buy(uint256,uint256)": {

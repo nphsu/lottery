@@ -21912,12 +21912,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x97e65f91d765A1cA694A618e942904E0B2D8376C",
-      "transactionHash": "0xeb05ca6ffa19be2966be5e8be07636585e85bef0dac0fe271c61eba23530eeb2"
+      "address": "0xE592645D809861B6549C45Bb5A6BfcB49FcC6Dc4",
+      "transactionHash": "0x9b2a01a848cce1c00b67fe98d9897fdacc360e9eaf33bad156ac34ffb8eef054"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-07-21T14:01:35.197Z",
+  "updatedAt": "2019-07-21T14:18:22.651Z",
   "devdoc": {
     "methods": {
       "buy(uint256,uint256)": {
