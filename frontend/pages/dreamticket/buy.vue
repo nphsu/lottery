@@ -97,7 +97,8 @@
           PASSCODE is not confirmed.
         </v-alert>
         <v-alert :value="buyComplete" color="success" icon="success" transition="scale-transition" outline>
-          BUY process finished. You have to do REVEAL during reveal turm.
+          <p>BUY process finished. You have to do REVEAL during reveal turm.</p>
+          <p>You can introduce friends using this link: {{affiliateLink}}</p>
         </v-alert>
         <v-layout>   
           <v-flex md12>
@@ -156,6 +157,7 @@ export default {
       numbers8: '',
       numbers9: '',
       buyComplete: false,
+      affiliateLink: null,
     }
   },
   created: async function () {
@@ -258,6 +260,8 @@ export default {
         if (e) {
           console.error(e)
           console.log(id)
+        } else {
+          _this.affiliateLink = `http://localhost:3000/${web3.eth.defaultAccount}`
         }
       })
 

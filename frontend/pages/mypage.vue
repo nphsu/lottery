@@ -6,7 +6,6 @@
         <p>Now is available (1.Aug.2019 - 14.Aug.2019)</p>
         <v-layout>
           <v-flex md12>
-            <v-btn @click="checkAlreadyBought()">URL</v-btn>
             <p>You can send this below link to get a right of challenging Second Dream!</p>
             <p>{{affiliateLink}}</p>
             <div class="text-xs-center">
@@ -51,7 +50,7 @@ export default {
     showAffiliateLink: function() {
       if (this.boughtNumbers.length === 0) {
         this.affiliateLink =
-          'You have to buy a ticket before you will introduce someone and get a right to challenge Second Dream'
+          'You have to buy a ticket before you introduce someone and get a right to challenge Second Dream'
       } else {
         this.affiliateLink = `http://localhost:3000/${playerAddress}`
       }
