@@ -44,44 +44,132 @@
 
         <v-dialog v-model="dialog2" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>1000 - 1499</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(2, 1000, 1499)" :loading="loading">1000 - 1499</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers2" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
 
         <v-dialog v-model="dialog3" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>1500 - 1999</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(3, 1500, 1999)" :loading="loading">1500 - 1999</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers3" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog4" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>2000 - 2499</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(4, 2000, 2499)" :loading="loading">2000 - 2499</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers4" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog5" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>2500 - 2999</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(5, 2500, 2999)" :loading="loading">2500 - 2999</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers5" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog6" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>3000 - 3499</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(6, 3000, 3499)" :loading="loading">3000 - 3499</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers6" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog7" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>3500 - 3999</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(7, 3500, 3999)" :loading="loading">3500 - 3999</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers7" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog8" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>4000 - 4499</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(8, 4000, 4499)" :loading="loading">4000 - 4499</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers8" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
         <v-dialog v-model="dialog9" scrollable max-width="300px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on" disabled>4500 - 4999</v-btn>
+            <v-btn color="primary" dark v-on="on" @click="getSelectableNumbers(9, 4500, 4999)" :loading="loading">4500 - 4999</v-btn>
           </template>
+          <v-card>
+            <v-card-title>Select Ticket Number</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 500px; width: 500px;">
+              <v-radio-group column>
+                <div v-for="(value, index) in numbers9" :key="index">
+                  <v-btn :disabled="value.soldout" @click="selectNumber(value.num)">{{value.num}}</v-btn>
+                </div>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
         </v-dialog>
 
         <p>Your select number is  <span class="headline font-weight-bold font-italic">  {{selectedNumber}}  </span> Are you sure?</p>

@@ -8,6 +8,33 @@
           <v-flex md12>
             <p>You can send this below link to get a right of challenging Second Dream!</p>
             <p>{{affiliateLink}}</p>
+            <v-divider/>
+            <div v-for="num in boughtNumbers" :key="num.value">
+              <v-stepper value="1">
+                <v-stepper-header>
+                  <p>{{num}}</p>
+                  <v-stepper-step step="1">Buy Ticket</v-stepper-step>
+                  <v-divider/>
+                  <v-stepper-step step="2">Reveal Ticket</v-stepper-step>
+                  <v-divider/>
+                  <v-stepper-step step="3">Show Winner</v-stepper-step>
+                </v-stepper-header>
+              </v-stepper>
+            </div>
+            <v-divider/>
+            <div v-for="num in boughtNumbers" :key="num.value">
+              <v-stepper value="2">
+                <v-stepper-header>
+                  <p>{{num}}</p>
+                  <v-stepper-step step="1">Buy Ticket</v-stepper-step>
+                  <v-divider/>
+                  <v-stepper-step step="2">Reveal Ticket</v-stepper-step>
+                  <v-divider/>
+                  <v-stepper-step step="3">Show Winner</v-stepper-step>
+                </v-stepper-header>
+              </v-stepper>
+            </div>
+            <v-divider/>
             <div class="text-xs-center">
               <v-btn @click="$router.push(`/`)">BACK TO TOP</v-btn>
             </div>
@@ -32,20 +59,28 @@ export default {
   data() {
     return {
       affiliateLink: null,
-      boughtNumbers: null
+      boughtNumbers: null,
+      revealedNumbers: null,
     }
   },
   created: async function() {
     await this.getBoughtNumbers()
+    await this.getRevealedNumbers()
     // TODO: change to a real domain and a url
     this.showAffiliateLink()
   },
   methods: {
-    getBoughtNumbers: async function() {
+    getBoughtNumbers: async function () {
       const boughtNumbers = await dreamTicket.methods
         .getNumbersOnBuyTerm(playerAddress)
         .call()
       this.boughtNumbers = boughtNumbers
+    },
+    getRevealedNumbers: async function () {
+      const revealedNumbers = await dreamTicket.methods
+        .getNumbersOnRevealTerm(playerAddress)
+        .call()
+      this.revealedNumbers = revealedNumbers
     },
     showAffiliateLink: function() {
       if (this.boughtNumbers.length === 0) {
