@@ -85,3 +85,6 @@ sw.*
 
 # ENV
 .envrc
+
+# DC
+.DS_Store
