@@ -36,6 +36,7 @@
         <v-icon>remove</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
+      <v-btn outline color="indigo" @click="signin()">{{username}}</v-btn>
       <v-spacer />
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
@@ -63,7 +64,14 @@
 </template>
 
 <script>
-export default {
+import Web3 from 'web3'
+// import dreamTicketJSON from '~/contracts/DreamTicket.json'
+const web3 = new Web3(Web3.givenProvider)
+// const dreamTicketABI = dreamTicketJSON.abi
+// const dreamTicketAddress = dreamTicketJSON.networks[5777].address
+// const dreamTicket = web3.eth.Contract(dreamTicketABI, dreamTicketAddress)
+
+export default {  
   data() {
     return {
       clipped: false,
@@ -95,7 +103,22 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'H2O.Inc'
+      title: 'DreamTicket',
+      username: 'LOGIN'
+    }
+  },
+  created: async function () {
+    await this.loadAccount()
+  },
+  methods: {
+    loadAccount: async function () {
+      const account = await window.ethereum.enable()
+      const defaultAccount = account[0]
+      web3.eth.defaultAccount = defaultAccount
+      this.username = 'Guest'
+    },
+    signin: function () {
+      this.$router.push('/signup')
     }
   }
 }
