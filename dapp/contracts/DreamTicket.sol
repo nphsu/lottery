@@ -1,7 +1,7 @@
 pragma solidity >=0.4.21 <0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./Ownable.sol";
+import './Ownable.sol';
 
 contract DreamTicket is Ownable {
 
@@ -29,11 +29,19 @@ contract DreamTicket is Ownable {
   uint private TICKET_PRICE = 1e15;
 
   // The total number of ticket which is sold in a term
-  uint private TICKET_TOTAL = 5000;
+  uint private TICKET_TOTAL;
   // uint private TICKET_TOTAL = 10; // DEV
 
+  // 14 days to change to the reveal term
+  uint private BUY_TERM = 14 * 24 * 60 * 60;
+
+  // 10 days to change to the winning term
+  uint private REVEAL_TERM = 10 * 24 * 60 * 60;
+  
   // Buy player's number
   mapping(uint => uint) private buyCount;
+
+  mapping(uint => uint256) internal buyEndTime;
 
   // num => CommitmentHash(BuyerAddress * num * passcode)
   mapping(uint => mapping(uint => bytes32)) private commitments;
@@ -56,6 +64,8 @@ contract DreamTicket is Ownable {
   // Reveal player's number
   mapping(uint => uint) private revealCount;
 
+  mapping(uint => uint256) internal revealEndTime;
+
   // TicketNumber => BuyerAddress
   mapping(uint => mapping(uint => address payable)) private numToAddr;
 
@@ -69,7 +79,8 @@ contract DreamTicket is Ownable {
   mapping(uint => address payable) private winner;
 
 
-  constructor () public {
+  constructor (uint ticketTotal) public {
+    TICKET_TOTAL = ticketTotal;
     round = 0;
     initEntries();
   }
@@ -77,7 +88,10 @@ contract DreamTicket is Ownable {
   /// @notice The game will be reset
   function initEntries() private {
     round++;
+    uint256 _now = block.timestamp;
     buyCount[round] = 0;
+    buyEndTime[round] = _now + BUY_TERM;
+    revealEndTime[round] = _now + REVEAL_TERM;
     revealCount[round] = 0;
   }
 
@@ -135,10 +149,10 @@ contract DreamTicket is Ownable {
     numToAddr[round][_num] = msg.sender;
     addrToNumsOnRevealTerm[round][msg.sender].push(_num);
 
-    if (revealCount[round] == TICKET_TOTAL) {
-      nextTerm();
-      drawWinner();
-    }
+    // if (revealCount[round] == TICKET_TOTAL) {
+    //   nextTerm();
+    //   drawWinner();
+    // }
   }
 
   function drawWinner () public payable/*onlyOwner*/ {
@@ -276,5 +290,31 @@ contract DreamTicket is Ownable {
 
   function getContractBalance() public view returns (uint) {
     return address(this).balance;
+  }
+
+  function getBlocktime() public view returns (uint256) {
+    return block.timestamp;
+  }
+
+  function timepolling() public {
+    uint256 _now = block.timestamp;
+    if (term == Term.BUY) {
+      if (_now > buyEndTime[round]) {
+        if (TICKET_TOTAL == buyCount[round]) {
+          term = Term.REVEAL;
+        } else {
+          buyEndTime[round] += 2 * 24 * 60 * 60;
+          revealEndTime[round] += 2 * 24 * 60 * 60;
+        }
+      return;
+      }
+      // else:Nothing
+    } else if (term == Term.REVEAL) {
+      if (_now > revealEndTime[round]) {
+        term = Term.RESULT;
+        return;
+      }
+      // else:Nothing
+    }
   }
 }

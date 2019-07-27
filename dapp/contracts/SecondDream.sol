@@ -5,6 +5,9 @@ import "./DreamTicket.sol";
 contract SecondDream is DreamTicket {
 
   // TODO: write test code
+
+  constructor (uint ticketTotal) DreamTicket(ticketTotal) public {
+  }
   
   event Challenge(
     address player

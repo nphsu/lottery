@@ -15,7 +15,8 @@ contract('DreamTicket', accounts => {
   describe('as an instance', () => {
 
     beforeEach(async function () {
-      this.contract = await DreamTicket.new()
+      const ticketTotal = 4000
+      this.contract = await DreamTicket.new(ticketTotal)
     })
 
     /////////////////////////////////////////////
@@ -65,16 +66,16 @@ contract('DreamTicket', accounts => {
       .should.be.rejectedWith(ERROR_MSG)
     })
 
-    it('success buy() because the num is less than 5000', async function() {
-      const num = 4999;
+    it('success buy() because the num is less than 4000', async function() {
+      const num = 3999;
       const passcode = 4649;
       const value = 1e15;
       const contractAddress = this.contract.address;
       await this.contract.buy(num, passcode, {from: accounts[0], to: contractAddress, value: value})
     })
 
-    it('failure buy() because the num is more than 4999', async function() {
-      const num = 5000;
+    it('failure buy() because the num is more than 3999', async function() {
+      const num = 4000;
       const passcode = 4649;
       const value = 1e15;
       const contractAddress = this.contract.address;

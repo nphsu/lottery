@@ -1,5 +1,6 @@
 const contract = artifacts.require("SecondDream");
 
 module.exports = function(deployer) {
-  deployer.deploy(contract);
+  const ticketTotal = 4000
+  deployer.deploy(contract, ticketTotal)
 };
